@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Market Predictor</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Fish Market Predictor</h1>
+        <form id="prediction-form">
+            <label for="feature1">Length1:</label>
+            <input type="text" name="feature1" required><br>
+            <label for="feature2">Length2:</label>
+            <input type="text" name="feature2" required><br>
+            <label for="feature3">Length3:</label>
+            <input type="text" name="feature3" required><br>
+            <label for="feature4">Height:</label>
+            <input type="text" name="feature4" required><br>
+            <label for="feature5">Width:</label>
+            <input type="text" name="feature5" required><br>
+            <label for="feature6">Weight:</label>
+            <input type="text" name="feature6" required><br>
+            <button type="submit">Predict</button>
+        </form>
+        <h2 id="result">{{ prediction_text }}</h2>
+    </div>
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                data: [
+                    parseFloat(formData.get('feature1')),
+                    parseFloat(formData.get('feature2')),
+                    parseFloat(formData.get('feature3')),
+                    parseFloat(formData.get('feature4')),
+                    parseFloat(formData.get('feature5')),
+                    parseFloat(formData.get('feature6'))
+                ]
+            };
+            
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('result').textContent = 'Prediction: ' + result.prediction;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            });
+        });
+    </script>
+</body>
+</html>
